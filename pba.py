@@ -1,18 +1,28 @@
 import sys
-import io
 import string
 import math
+import os
+from os.path import isfile, join
 
 def main():
+
+    if len( sys.argv ) == 1:
+        print ( "usage: " + sys.argv[0] + " <list of files>" )
+        print ( "       " + sys.argv[0] + " -d <directory with files>" )
+        return
 
     files = {}  # a dictionary which uses diffraction sphere designations as keys
                 # value is currently an array of two arrays which contain
                 # data imported from the files
 
                 # format of data: intensity, x, y, z
-
-    for i in range( 1, len( sys.argv ) ):
-        temp = str.split( sys.argv[i], '/' )
+    if len( sys.argv ) == 3 and sys.argv[1] == '-d':
+        mypath = sys.argv[2]
+        filelist = [f for f in os.listdir( mypath ) if isfile( join( mypath, f ) )]
+    else:
+        filelist = sys.argv[1:]
+    for i in range( 0, len( filelist ) ):
+        temp = str.split( filelist[i], '/' )
         temp = temp[len( temp ) - 1]
         temp = str.split( temp, '_' )
 
@@ -28,12 +38,12 @@ def main():
 
     for filekey in files.keys():
 
-        print ( '>>> IMPORTING ' + filekey )
+        # print ( '>>> IMPORTING ' + filekey )
 
         for j in range( 0, 2 ):
-            filename = sys.argv[files[filekey][j][0]]
+            filename = filelist[files[filekey][j][0]]
             # print( filename )
-            file = io.open(filename, mode='r')
+            file = open( join( mypath, filename ), mode='r')
             line = str( file.readline() ).strip( '\n' )
             intensity_column = []
             x_column = []
@@ -72,7 +82,7 @@ def main():
                                    # this will be some entry in the "perfect" data
         center_intensity = center_x = center_y = center_z = 0
         for j in range( 0, 2 ):
-            print( filekey + ' (' + files[filekey][j][1] + ')' )
+            # print( filekey + ' (' + files[filekey][j][1] + ')' )
             intensity_column = files[filekey][j][2]
             x_column = files[filekey][j][3]
             y_column = files[filekey][j][4]
@@ -116,9 +126,8 @@ def main():
                     max_distance = distance
             extras[0] = max_distance
             extras[1] = 4 * math.pi / 3 * math.pow(max_distance, 3)
-            print (files[filekey][j])
 
-    output = io.open('pba-output.csv', mode='w')
+    output = open('pba-output.csv', mode='w')
     output_row  = 'filekey'
     output_row += ',damaged radius,damaged volume,damaged intensity sum'
     output_row += ',undamaged radius,undamaged volume,undamaged intensity sum'
@@ -127,15 +136,17 @@ def main():
     for filekey in files.keys():
         output_row  = filekey
         extras = files[filekey][0][6]
-        output_row += ',' + str(extras[0]) + ',' + str(extras[1]) + ',' + str(extras[2])
+        output_row += ',' + str( extras[0] ) + ',' + str( extras[1] ) + ',' + str( extras[2] )
         extras = files[filekey][1][6]
-        output_row += ',' + str(extras[0]) + ',' + str(extras[1]) + ',' + str(extras[2])
+        output_row += ',' + str( extras[0] ) + ',' + str( extras[1] ) + ',' + str( extras[2] )
         delta = files[filekey][0][6][0] - files[filekey][1][6][0]
-        output_row += ',' + str(delta)
+        output_row += ',' + str( delta )
         center = files[filekey][0][7]
-        output_row += ',' + str(center[0]) + ',' + str(center[1]) + ',' + str(center[2]) + '\n'
-        output.write(output_row)
+        output_row += ',' + str( center[0] ) + ',' + str( center[1] ) + ',' + str( center[2] ) + '\n'
+        output.write( output_row )
     output.close()
+    print('Analysed ' + str( len( filelist ) ) + ' files.')
+    print('Results saved to pba-output.csv.')
 
 if __name__== '__main__':
     main()
