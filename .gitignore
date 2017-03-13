@@ -1,4 +1,5 @@
 .DS_Store
 pba-output.csv
-data/*
+psa-output.csv
 files/*
+__pycache__/*
