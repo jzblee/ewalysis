@@ -163,7 +163,7 @@ def psa():
     global filelist
 
     output = open('psa-output.csv', mode='w')
-    output_row  = 'filekey,damaged_int - undamaged_int,damaged_x,damaged_y,damaged_z,undamaged_x,undamaged_y,undamaged_z\n'
+    output_row  = 'filekey,damaged_int - undamaged_int,distance,damaged_x,damaged_y,damaged_z,undamaged_x,undamaged_y,undamaged_z\n'
     output.write(output_row)
 
     for filekey in files.keys():
@@ -229,19 +229,20 @@ def psa():
                             break
                     output_row  = filekey
                     output_row += ',' + str( f0_ic[point_pairs[j][1]] - f1_ic[point_pairs[j][2]] )
+                    output_row += ',' + str( point_pairs[j][0] )
                     output_row += ',' + str( f0_xc[i] ) + ',' + str( f0_yc[i] ) + ',' + str( f0_zc[i] )
                     output_row += ',' + str( f1_xc[i] ) + ',' + str( f1_yc[i] ) + ',' + str( f1_zc[i] ) + '\n'
                     output.write( output_row )
                 else: # print orphan point in f0
                     output_row  = filekey
                     output_row += ',no match found'
-                    output_row += ',' + str( f0_xc[i] ) + ',' + str( f0_yc[i] ) + ',' + str( f0_zc[i] )
+                    output_row += ',,' + str( f0_xc[i] ) + ',' + str( f0_yc[i] ) + ',' + str( f0_zc[i] )
                     output_row += ',,,\n'
                     output.write( output_row )
             if i < len( f1_ic ) and not f1_points[i]: # print orphan point in f1
                 output_row  = filekey
                 output_row += ',no match found'
-                output_row += ',,,'
+                output_row += ',,,,'
                 output_row += ',' + str( f1_xc[i] ) + ',' + str( f1_yc[i] ) + ',' + str( f1_zc[i] ) + '\n'
                 output.write( output_row )
 
