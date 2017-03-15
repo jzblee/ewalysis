@@ -66,13 +66,15 @@ def read():
             files[filekey][j].append( center )
 
             while line != '':
+
                 line = str( line ).strip( '\n' )
                 new_row = str.split( line, ',' )
                 assert ( len( new_row ) == 4 ), 'Incorrect column counts!'
-                intensity_column.append( float( new_row[0] ) )
-                x_column.append( float( new_row[1] ) )
-                y_column.append( float( new_row[2] ) )
-                z_column.append( float( new_row[3] ) )
+                if float( new_row[0] ) >= 60000:
+                    intensity_column.append( float( new_row[0] ) )
+                    x_column.append( float( new_row[1] ) )
+                    y_column.append( float( new_row[2] ) )
+                    z_column.append( float( new_row[3] ) )
                 line = file.readline()
             file.close()
 
@@ -125,8 +127,6 @@ def pba():
             center.append( center_z )
             max_distance = 0.0;
             for k in range( len( intensity_column ) ):
-                if intensity_column[k] < 60000:
-                    continue
                 distance = math.sqrt( math.pow( center_x - x_column[k], 2 ) + 
                                       math.pow( center_y - y_column[k], 2 ) +
                                       math.pow( center_z - z_column[k], 2 ) )
